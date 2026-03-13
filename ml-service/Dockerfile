@@ -15,8 +15,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create non-root user
-RUN adduser --disabled-password --gecos "" appuser
-USER appuser
+RUN adduser --system --uid 1001 mluser
+USER mluser
 
 EXPOSE 8000
 

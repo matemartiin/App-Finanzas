@@ -10,11 +10,11 @@ import { cn } from '@/lib/utils';
 
 const cardVariants = {
   default:
-    'bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm',
+    'bg-surface border border-border shadow-sm',
   elevated:
-    'bg-white dark:bg-gray-900 shadow-md hover:shadow-lg',
+    'bg-surface shadow-md hover:shadow-lg',
   bordered:
-    'bg-white dark:bg-gray-900 border-2 border-[#7C9CB5]/20 dark:border-[#7C9CB5]/30',
+    'bg-surface border-2 border-primary/20 dark:border-primary/30',
   glass:
     'backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 border border-white/20 dark:border-gray-700/30 shadow-lg',
 } as const;
@@ -106,7 +106,7 @@ const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      'text-lg font-semibold leading-none tracking-tight text-[#2D3436] dark:text-gray-100',
+      'text-lg font-semibold leading-none tracking-tight text-text-primary',
       className
     )}
     {...props}
@@ -115,6 +115,18 @@ const CardTitle = React.forwardRef<
   </h3>
 ));
 CardTitle.displayName = 'CardTitle';
+
+const CardDescription = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn('text-sm text-text-secondary', className)}
+    {...props}
+  />
+));
+CardDescription.displayName = 'CardDescription';
 
 const CardContent = React.forwardRef<
   HTMLDivElement,
@@ -130,10 +142,13 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('flex items-center pt-4 border-t border-gray-100 dark:border-gray-800', className)}
+    className={cn(
+      'flex items-center pt-4 border-t border-border',
+      className
+    )}
     {...props}
   />
 ));
 CardFooter.displayName = 'CardFooter';
 
-export { Card, CardHeader, CardTitle, CardContent, CardFooter };
+export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter };

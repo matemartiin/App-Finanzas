@@ -3,17 +3,18 @@ version: "3.9"
 services:
   postgres:
     image: postgres:16-alpine
+    container_name: finanzapp-db
     restart: unless-stopped
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: finanzas
-      POSTGRES_PASSWORD: finanzas_secret
-      POSTGRES_DB: finanzas_db
+      POSTGRES_USER: finanzapp
+      POSTGRES_PASSWORD: finanzapp
+      POSTGRES_DB: finanzapp
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U finanzas -d finanzas_db"]
+      test: ["CMD-SHELL", "pg_isready -U finanzapp -d finanzapp"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -22,22 +23,24 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: finanzapp-web
     restart: unless-stopped
     ports:
       - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://finanzapp:finanzapp@postgres:5432/finanzapp
+      ML_SERVICE_URL: http://ml-service:8000
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NODE_ENV: production
     depends_on:
       postgres:
         condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql://finanzas:finanzas_secret@postgres:5432/finanzas_db
-      ML_SERVICE_URL: http://ml-service:8000
-      NODE_ENV: production
-      NEXTAUTH_URL: http://localhost:3000
 
   ml-service:
     build:
       context: ./ml-service
       dockerfile: Dockerfile
+    container_name: finanzapp-ml
     restart: unless-stopped
     ports:
       - "8000:8000"

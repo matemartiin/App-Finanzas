@@ -44,7 +44,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className="text-sm font-medium text-[#2D3436] dark:text-gray-300"
+            className="text-sm font-medium text-text-primary"
           >
             {label}
           </label>
@@ -56,14 +56,14 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             id={selectId}
             className={cn(
               'h-10 w-full appearance-none rounded-xl px-3 pr-9 text-sm',
-              'bg-white dark:bg-gray-900',
-              'border border-gray-200 dark:border-gray-700',
-              'text-[#2D3436] dark:text-gray-100',
+              'bg-surface',
+              'border border-border',
+              'text-text-primary',
               'transition-all duration-200',
-              'focus:outline-none focus:ring-2 focus:ring-[#7C9CB5]/40 focus:border-[#7C9CB5]',
+              'focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary',
               'disabled:opacity-50 disabled:cursor-not-allowed',
               hasError &&
-                'border-[#C48A8A] focus:ring-[#C48A8A]/40 focus:border-[#C48A8A]',
+                'border-danger focus:ring-danger/40 focus:border-danger',
               className
             )}
             aria-invalid={hasError}
@@ -88,13 +88,13 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             ))}
           </select>
 
-          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary" />
         </div>
 
         {hasError && (
           <p
             id={`${selectId}-error`}
-            className="text-xs text-[#C48A8A]"
+            className="text-xs text-danger"
             role="alert"
           >
             {error}
@@ -104,7 +104,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         {!hasError && helperText && (
           <p
             id={`${selectId}-helper`}
-            className="text-xs text-gray-400 dark:text-gray-500"
+            className="text-xs text-text-secondary"
           >
             {helperText}
           </p>

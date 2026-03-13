@@ -194,3 +194,53 @@ export interface CategorySpending {
   percentage: number;
   transactionCount: number;
 }
+
+/* ===== Portfolio / Investments ===== */
+
+export type AssetType = 'STOCK' | 'BOND' | 'CEDEAR' | 'FCI';
+
+export interface PortfolioHolding {
+  id: string;
+  ticker: string;
+  name: string;
+  type: AssetType;
+  quantity: number;
+  avgCost: number;
+  currency: string;
+  sector?: string;
+  notes?: string;
+  currentPrice?: number;
+  change?: number;
+  pnl?: number;
+  pnlPercent?: number;
+}
+
+export interface MarketData {
+  ticker: string;
+  price: number;
+  change: number;
+  volume?: number;
+  high?: number;
+  low?: number;
+  updatedAt: string;
+}
+
+export interface ExchangeRate {
+  type: string;
+  buyPrice: number;
+  sellPrice: number;
+  updatedAt: string;
+}
+
+export interface NewsItem {
+  id: string;
+  title: string;
+  summary?: string;
+  source: string;
+  url: string;
+  ticker?: string;
+  sector?: string;
+  impact?: 'positive' | 'negative' | 'neutral';
+  impactAnalysis?: string;
+  publishedAt: string;
+}

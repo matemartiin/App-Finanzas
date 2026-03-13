@@ -5,9 +5,9 @@ import { cn } from '@/lib/utils';
 
 const inputVariants = {
   default:
-    'border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900',
+    'border border-border bg-surface',
   filled:
-    'border border-transparent bg-gray-50 dark:bg-gray-800',
+    'border border-transparent bg-surface-alt',
 } as const;
 
 export type InputVariant = keyof typeof inputVariants;
@@ -47,7 +47,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-medium text-[#2D3436] dark:text-gray-300"
+            className="text-sm font-medium text-text-primary"
           >
             {label}
           </label>
@@ -55,7 +55,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
         <div className="relative">
           {iconLeft && (
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none">
               {iconLeft}
             </span>
           )}
@@ -65,14 +65,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             className={cn(
               'h-10 w-full rounded-xl px-3 text-sm',
-              'text-[#2D3436] dark:text-gray-100',
-              'placeholder:text-gray-400 dark:placeholder:text-gray-500',
+              'text-text-primary',
+              'placeholder:text-text-secondary/60',
               'transition-all duration-200',
-              'focus:outline-none focus:ring-2 focus:ring-[#7C9CB5]/40 focus:border-[#7C9CB5]',
+              'focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary',
               'disabled:opacity-50 disabled:cursor-not-allowed',
               inputVariants[variant],
               hasError &&
-                'border-[#C48A8A] focus:ring-[#C48A8A]/40 focus:border-[#C48A8A]',
+                'border-danger focus:ring-danger/40 focus:border-danger',
               iconLeft && 'pl-10',
               iconRight && 'pr-10',
               className
@@ -89,7 +89,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           />
 
           {iconRight && (
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary">
               {iconRight}
             </span>
           )}
@@ -98,7 +98,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {hasError && (
           <p
             id={`${inputId}-error`}
-            className="text-xs text-[#C48A8A]"
+            className="text-xs text-danger"
             role="alert"
           >
             {error}
@@ -108,7 +108,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {!hasError && helperText && (
           <p
             id={`${inputId}-helper`}
-            className="text-xs text-gray-400 dark:text-gray-500"
+            className="text-xs text-text-secondary"
           >
             {helperText}
           </p>

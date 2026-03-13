@@ -1,6 +1,26 @@
-import { PrismaClient, TransactionType, WalletType, BudgetPeriod, EventType } from "@prisma/client";
+import {
+  PrismaClient,
+  TransactionType,
+  WalletType,
+  BudgetPeriod,
+  EventType,
+} from "@prisma/client";
 
 const prisma = new PrismaClient();
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function randomDate(start: Date, end: Date): Date {
+  return new Date(
+    start.getTime() + Math.random() * (end.getTime() - start.getTime()),
+  );
+}
+
+function randomAmount(min: number, max: number): number {
+  return Math.round((Math.random() * (max - min) + min) * 100) / 100;
+}
+
+// ─── Seed data ────────────────────────────────────────────────────────────────
 
 interface CategoryDef {
   name: string;
@@ -10,31 +30,32 @@ interface CategoryDef {
 }
 
 const defaultCategories: CategoryDef[] = [
-  // EXPENSE categories
-  { name: "Alimentación", icon: "shopping-cart", color: "#F9A8D4", type: TransactionType.EXPENSE },
-  { name: "Transporte", icon: "car", color: "#93C5FD", type: TransactionType.EXPENSE },
-  { name: "Entretenimiento", icon: "film", color: "#C4B5FD", type: TransactionType.EXPENSE },
-  { name: "Salud", icon: "heart-pulse", color: "#FCA5A5", type: TransactionType.EXPENSE },
-  { name: "Educación", icon: "graduation-cap", color: "#A5F3FC", type: TransactionType.EXPENSE },
-  { name: "Ropa", icon: "shirt", color: "#FBCFE8", type: TransactionType.EXPENSE },
-  { name: "Hogar", icon: "home", color: "#BBF7D0", type: TransactionType.EXPENSE },
-  { name: "Servicios", icon: "wrench", color: "#FDE68A", type: TransactionType.EXPENSE },
-  { name: "Seguros", icon: "shield", color: "#D9F99D", type: TransactionType.EXPENSE },
-  { name: "Impuestos", icon: "landmark", color: "#E9D5FF", type: TransactionType.EXPENSE },
-  { name: "Tecnología", icon: "laptop", color: "#BAE6FD", type: TransactionType.EXPENSE },
-  { name: "Restaurantes", icon: "utensils", color: "#FED7AA", type: TransactionType.EXPENSE },
-  { name: "Suscripciones", icon: "repeat", color: "#C7D2FE", type: TransactionType.EXPENSE },
-  { name: "Regalos", icon: "gift", color: "#FECDD3", type: TransactionType.EXPENSE },
-  { name: "Viajes", icon: "plane", color: "#99F6E4", type: TransactionType.EXPENSE },
-  { name: "Mascotas", icon: "paw-print", color: "#FBBF24", type: TransactionType.EXPENSE },
-  // INCOME categories
-  { name: "Salario", icon: "banknote", color: "#86EFAC", type: TransactionType.INCOME },
-  { name: "Freelance", icon: "briefcase", color: "#6EE7B7", type: TransactionType.INCOME },
-  { name: "Inversiones", icon: "trending-up", color: "#67E8F9", type: TransactionType.INCOME },
-  { name: "Otros Ingresos", icon: "plus-circle", color: "#A7F3D0", type: TransactionType.INCOME },
+  // EXPENSE categories (16)
+  { name: "Alimentación", icon: "shopping-cart", color: "#FFB3BA", type: TransactionType.EXPENSE },
+  { name: "Transporte", icon: "car", color: "#BAFFC9", type: TransactionType.EXPENSE },
+  { name: "Entretenimiento", icon: "gamepad-2", color: "#BAE1FF", type: TransactionType.EXPENSE },
+  { name: "Salud", icon: "heart-pulse", color: "#FFD4E5", type: TransactionType.EXPENSE },
+  { name: "Educación", icon: "graduation-cap", color: "#D4BAFF", type: TransactionType.EXPENSE },
+  { name: "Ropa", icon: "shirt", color: "#FFFFBA", type: TransactionType.EXPENSE },
+  { name: "Hogar", icon: "home", color: "#E8BAFF", type: TransactionType.EXPENSE },
+  { name: "Servicios", icon: "wrench", color: "#BAFFD4", type: TransactionType.EXPENSE },
+  { name: "Seguros", icon: "shield", color: "#FFE4BA", type: TransactionType.EXPENSE },
+  { name: "Impuestos", icon: "landmark", color: "#FFC9BA", type: TransactionType.EXPENSE },
+  { name: "Tecnología", icon: "laptop", color: "#C9BAFF", type: TransactionType.EXPENSE },
+  { name: "Restaurantes", icon: "utensils", color: "#FFBAE1", type: TransactionType.EXPENSE },
+  { name: "Suscripciones", icon: "repeat", color: "#BAF0FF", type: TransactionType.EXPENSE },
+  { name: "Regalos", icon: "gift", color: "#FFE8BA", type: TransactionType.EXPENSE },
+  { name: "Viajes", icon: "plane", color: "#BAFFEA", type: TransactionType.EXPENSE },
+  { name: "Mascotas", icon: "paw-print", color: "#E5FFBA", type: TransactionType.EXPENSE },
+  // INCOME categories (4)
+  { name: "Salario", icon: "banknote", color: "#B5EAD7", type: TransactionType.INCOME },
+  { name: "Freelance", icon: "briefcase", color: "#C7CEEA", type: TransactionType.INCOME },
+  { name: "Inversiones", icon: "trending-up", color: "#FFDAC1", type: TransactionType.INCOME },
+  { name: "Otros Ingresos", icon: "plus-circle", color: "#E2F0CB", type: TransactionType.INCOME },
 ];
 
 interface WalletDef {
+  id: string;
   name: string;
   type: WalletType;
   provider: string | null;
@@ -43,24 +64,68 @@ interface WalletDef {
 }
 
 const defaultWallets: WalletDef[] = [
-  { name: "Efectivo", type: WalletType.CASH, provider: null, balance: 45000, currency: "ARS" },
-  { name: "Mercado Pago", type: WalletType.DIGITAL_WALLET, provider: "Mercado Pago", balance: 128500, currency: "ARS" },
-  { name: "Cuenta Bancaria", type: WalletType.BANK, provider: "Banco Nación", balance: 350000, currency: "ARS" },
+  { id: "efectivo", name: "Efectivo", type: WalletType.CASH, provider: null, balance: 45000, currency: "ARS" },
+  { id: "mercado-pago", name: "Mercado Pago", type: WalletType.DIGITAL_WALLET, provider: "Mercado Pago", balance: 128500, currency: "ARS" },
+  { id: "cuenta-bancaria", name: "Cuenta Bancaria", type: WalletType.BANK, provider: "Banco Nación", balance: 350000, currency: "ARS" },
 ];
 
-function randomDate(start: Date, end: Date): Date {
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+interface TransactionDef {
+  description: string;
+  category: string;
+  wallet: string;
+  type: TransactionType;
+  minAmount: number;
+  maxAmount: number;
 }
 
-function randomAmount(min: number, max: number): number {
-  return Math.round((Math.random() * (max - min) + min) * 100) / 100;
-}
+const transactionTemplates: TransactionDef[] = [
+  // Expenses
+  { description: "Supermercado Carrefour", category: "Alimentación", wallet: "mercado-pago", type: TransactionType.EXPENSE, minAmount: 25000, maxAmount: 55000 },
+  { description: "Verdulería del barrio", category: "Alimentación", wallet: "efectivo", type: TransactionType.EXPENSE, minAmount: 4000, maxAmount: 12000 },
+  { description: "Carnicería Don José", category: "Alimentación", wallet: "efectivo", type: TransactionType.EXPENSE, minAmount: 10000, maxAmount: 28000 },
+  { description: "Supermercado Día", category: "Alimentación", wallet: "mercado-pago", type: TransactionType.EXPENSE, minAmount: 18000, maxAmount: 42000 },
+  { description: "SUBE - Carga", category: "Transporte", wallet: "mercado-pago", type: TransactionType.EXPENSE, minAmount: 5000, maxAmount: 10000 },
+  { description: "Uber viaje al centro", category: "Transporte", wallet: "mercado-pago", type: TransactionType.EXPENSE, minAmount: 3500, maxAmount: 12000 },
+  { description: "Nafta YPF", category: "Transporte", wallet: "cuenta-bancaria", type: TransactionType.EXPENSE, minAmount: 25000, maxAmount: 55000 },
+  { description: "Netflix suscripción", category: "Suscripciones", wallet: "cuenta-bancaria", type: TransactionType.EXPENSE, minAmount: 5499, maxAmount: 5499 },
+  { description: "Spotify Premium", category: "Suscripciones", wallet: "cuenta-bancaria", type: TransactionType.EXPENSE, minAmount: 2999, maxAmount: 2999 },
+  { description: "Disney+ mensual", category: "Suscripciones", wallet: "cuenta-bancaria", type: TransactionType.EXPENSE, minAmount: 4299, maxAmount: 4299 },
+  { description: "Cine Hoyts con amigos", category: "Entretenimiento", wallet: "mercado-pago", type: TransactionType.EXPENSE, minAmount: 6000, maxAmount: 14000 },
+  { description: "Farmacia Farmacity", category: "Salud", wallet: "efectivo", type: TransactionType.EXPENSE, minAmount: 4000, maxAmount: 22000 },
+  { description: "Curso online Udemy", category: "Educación", wallet: "mercado-pago", type: TransactionType.EXPENSE, minAmount: 10000, maxAmount: 25000 },
+  { description: "Zara - Remera", category: "Ropa", wallet: "cuenta-bancaria", type: TransactionType.EXPENSE, minAmount: 18000, maxAmount: 65000 },
+  { description: "Expensas departamento", category: "Hogar", wallet: "cuenta-bancaria", type: TransactionType.EXPENSE, minAmount: 45000, maxAmount: 75000 },
+  { description: "Edesur - Luz", category: "Servicios", wallet: "cuenta-bancaria", type: TransactionType.EXPENSE, minAmount: 10000, maxAmount: 22000 },
+  { description: "Metrogas - Gas", category: "Servicios", wallet: "cuenta-bancaria", type: TransactionType.EXPENSE, minAmount: 6000, maxAmount: 16000 },
+  { description: "Fibertel Internet", category: "Servicios", wallet: "cuenta-bancaria", type: TransactionType.EXPENSE, minAmount: 14000, maxAmount: 24000 },
+  { description: "Movistar celular", category: "Servicios", wallet: "cuenta-bancaria", type: TransactionType.EXPENSE, minAmount: 8000, maxAmount: 14000 },
+  { description: "Parrilla Don Julio", category: "Restaurantes", wallet: "mercado-pago", type: TransactionType.EXPENSE, minAmount: 15000, maxAmount: 40000 },
+  { description: "Café Starbucks", category: "Restaurantes", wallet: "mercado-pago", type: TransactionType.EXPENSE, minAmount: 4000, maxAmount: 9000 },
+  { description: "AFIP monotributo", category: "Impuestos", wallet: "cuenta-bancaria", type: TransactionType.EXPENSE, minAmount: 18000, maxAmount: 35000 },
+  { description: "Seguro auto MAPFRE", category: "Seguros", wallet: "cuenta-bancaria", type: TransactionType.EXPENSE, minAmount: 28000, maxAmount: 48000 },
+  { description: "Mouse Logitech", category: "Tecnología", wallet: "mercado-pago", type: TransactionType.EXPENSE, minAmount: 22000, maxAmount: 45000 },
+  { description: "Regalo cumpleaños amigo", category: "Regalos", wallet: "efectivo", type: TransactionType.EXPENSE, minAmount: 10000, maxAmount: 35000 },
+  { description: "Alimento Royal Canin gato", category: "Mascotas", wallet: "mercado-pago", type: TransactionType.EXPENSE, minAmount: 12000, maxAmount: 28000 },
+  { description: "Veterinaria control anual", category: "Mascotas", wallet: "efectivo", type: TransactionType.EXPENSE, minAmount: 15000, maxAmount: 35000 },
+  { description: "Escapada Tigre fin de semana", category: "Viajes", wallet: "cuenta-bancaria", type: TransactionType.EXPENSE, minAmount: 40000, maxAmount: 120000 },
+  // Incomes
+  { description: "Salario mensual", category: "Salario", wallet: "cuenta-bancaria", type: TransactionType.INCOME, minAmount: 850000, maxAmount: 850000 },
+  { description: "Salario mensual", category: "Salario", wallet: "cuenta-bancaria", type: TransactionType.INCOME, minAmount: 850000, maxAmount: 850000 },
+  { description: "Salario mensual", category: "Salario", wallet: "cuenta-bancaria", type: TransactionType.INCOME, minAmount: 850000, maxAmount: 850000 },
+  { description: "Proyecto freelance diseño web", category: "Freelance", wallet: "mercado-pago", type: TransactionType.INCOME, minAmount: 120000, maxAmount: 350000 },
+  { description: "Dividendos FCI", category: "Inversiones", wallet: "cuenta-bancaria", type: TransactionType.INCOME, minAmount: 15000, maxAmount: 45000 },
+  { description: "Venta artículos usados ML", category: "Otros Ingresos", wallet: "mercado-pago", type: TransactionType.INCOME, minAmount: 12000, maxAmount: 55000 },
+];
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log("Seeding database...");
+  console.log("Seeding database...\n");
 
-  // Upsert categories
+  // ── Categories ──────────────────────────────────────────────────────────────
+
   const categoryMap: Record<string, string> = {};
+
   for (const cat of defaultCategories) {
     const result = await prisma.category.upsert({
       where: { name: cat.name },
@@ -69,200 +134,192 @@ async function main() {
     });
     categoryMap[cat.name] = result.id;
   }
-  console.log(`Upserted ${defaultCategories.length} categories`);
 
-  // Upsert wallets
-  const walletIds: string[] = [];
-  for (const wallet of defaultWallets) {
+  console.log(`  ✓ ${defaultCategories.length} categories upserted`);
+
+  // ── Wallets ─────────────────────────────────────────────────────────────────
+
+  const walletMap: Record<string, string> = {};
+
+  for (const w of defaultWallets) {
     const result = await prisma.wallet.upsert({
-      where: { id: wallet.name.toLowerCase().replace(/\s+/g, "-") },
+      where: { id: w.id },
       update: {
-        name: wallet.name,
-        type: wallet.type,
-        provider: wallet.provider,
-        balance: wallet.balance,
-        currency: wallet.currency,
+        name: w.name,
+        type: w.type,
+        provider: w.provider,
+        balance: w.balance,
+        currency: w.currency,
       },
       create: {
-        id: wallet.name.toLowerCase().replace(/\s+/g, "-"),
-        name: wallet.name,
-        type: wallet.type,
-        provider: wallet.provider,
-        balance: wallet.balance,
-        currency: wallet.currency,
+        id: w.id,
+        name: w.name,
+        type: w.type,
+        provider: w.provider,
+        balance: w.balance,
+        currency: w.currency,
       },
     });
-    walletIds.push(result.id);
+    walletMap[w.id] = result.id;
   }
-  console.log(`Upserted ${defaultWallets.length} wallets`);
 
-  // Sample transactions
+  console.log(`  ✓ ${defaultWallets.length} wallets upserted`);
+
+  // ── Transactions ────────────────────────────────────────────────────────────
+
   const now = new Date();
   const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
 
-  interface TransactionDef {
-    description: string;
-    category: string;
-    type: TransactionType;
-    minAmount: number;
-    maxAmount: number;
+  for (let i = 0; i < transactionTemplates.length; i++) {
+    const t = transactionTemplates[i];
+    const txId = `seed-tx-${String(i).padStart(3, "0")}`;
+    const date = randomDate(threeMonthsAgo, now);
+    const amount = randomAmount(t.minAmount, t.maxAmount);
+
+    await prisma.transaction.upsert({
+      where: { id: txId },
+      update: {
+        amount,
+        type: t.type,
+        description: t.description,
+        date,
+        categoryId: categoryMap[t.category],
+        walletId: walletMap[t.wallet],
+      },
+      create: {
+        id: txId,
+        amount,
+        type: t.type,
+        description: t.description,
+        date,
+        categoryId: categoryMap[t.category],
+        walletId: walletMap[t.wallet],
+      },
+    });
   }
 
-  const transactionTemplates: TransactionDef[] = [
-    { description: "Supermercado Carrefour", category: "Alimentación", type: TransactionType.EXPENSE, minAmount: 15000, maxAmount: 45000 },
-    { description: "Verdulería del barrio", category: "Alimentación", type: TransactionType.EXPENSE, minAmount: 3000, maxAmount: 12000 },
-    { description: "Carnicería Don José", category: "Alimentación", type: TransactionType.EXPENSE, minAmount: 8000, maxAmount: 25000 },
-    { description: "SUBE - Carga", category: "Transporte", type: TransactionType.EXPENSE, minAmount: 5000, maxAmount: 15000 },
-    { description: "Uber viaje", category: "Transporte", type: TransactionType.EXPENSE, minAmount: 3000, maxAmount: 12000 },
-    { description: "Nafta YPF", category: "Transporte", type: TransactionType.EXPENSE, minAmount: 20000, maxAmount: 50000 },
-    { description: "Netflix suscripción", category: "Suscripciones", type: TransactionType.EXPENSE, minAmount: 4500, maxAmount: 7000 },
-    { description: "Spotify Premium", category: "Suscripciones", type: TransactionType.EXPENSE, minAmount: 2500, maxAmount: 4000 },
-    { description: "Cine Hoyts", category: "Entretenimiento", type: TransactionType.EXPENSE, minAmount: 5000, maxAmount: 12000 },
-    { description: "Farmacia Farmacity", category: "Salud", type: TransactionType.EXPENSE, minAmount: 3000, maxAmount: 18000 },
-    { description: "Curso online Udemy", category: "Educación", type: TransactionType.EXPENSE, minAmount: 8000, maxAmount: 25000 },
-    { description: "Zara - Ropa", category: "Ropa", type: TransactionType.EXPENSE, minAmount: 15000, maxAmount: 60000 },
-    { description: "Expensas departamento", category: "Hogar", type: TransactionType.EXPENSE, minAmount: 35000, maxAmount: 55000 },
-    { description: "Edenor - Luz", category: "Servicios", type: TransactionType.EXPENSE, minAmount: 8000, maxAmount: 20000 },
-    { description: "Metrogas - Gas", category: "Servicios", type: TransactionType.EXPENSE, minAmount: 5000, maxAmount: 15000 },
-    { description: "Fibertel Internet", category: "Servicios", type: TransactionType.EXPENSE, minAmount: 12000, maxAmount: 22000 },
-    { description: "Restaurante parrilla", category: "Restaurantes", type: TransactionType.EXPENSE, minAmount: 12000, maxAmount: 35000 },
-    { description: "Café con amigos", category: "Restaurantes", type: TransactionType.EXPENSE, minAmount: 4000, maxAmount: 10000 },
-    { description: "AFIP monotributo", category: "Impuestos", type: TransactionType.EXPENSE, minAmount: 15000, maxAmount: 30000 },
-    { description: "Seguro auto", category: "Seguros", type: TransactionType.EXPENSE, minAmount: 25000, maxAmount: 45000 },
-    { description: "Auriculares Bluetooth", category: "Tecnología", type: TransactionType.EXPENSE, minAmount: 20000, maxAmount: 80000 },
-    { description: "Regalo cumpleaños", category: "Regalos", type: TransactionType.EXPENSE, minAmount: 8000, maxAmount: 30000 },
-    { description: "Alimento mascota", category: "Mascotas", type: TransactionType.EXPENSE, minAmount: 10000, maxAmount: 25000 },
-    { description: "Sueldo mensual", category: "Salario", type: TransactionType.INCOME, minAmount: 800000, maxAmount: 1200000 },
-    { description: "Proyecto freelance diseño", category: "Freelance", type: TransactionType.INCOME, minAmount: 150000, maxAmount: 400000 },
-    { description: "Proyecto freelance desarrollo", category: "Freelance", type: TransactionType.INCOME, minAmount: 200000, maxAmount: 600000 },
-    { description: "Dividendos FCI", category: "Inversiones", type: TransactionType.INCOME, minAmount: 30000, maxAmount: 80000 },
-    { description: "Venta artículo usado", category: "Otros Ingresos", type: TransactionType.INCOME, minAmount: 10000, maxAmount: 50000 },
-    { description: "Veterinaria control", category: "Mascotas", type: TransactionType.EXPENSE, minAmount: 15000, maxAmount: 35000 },
-    { description: "Escapada fin de semana", category: "Viajes", type: TransactionType.EXPENSE, minAmount: 40000, maxAmount: 120000 },
-  ];
+  console.log(`  ✓ ${transactionTemplates.length} transactions upserted`);
 
-  // Delete existing sample transactions to allow re-seeding
-  const existingCount = await prisma.transaction.count();
-  if (existingCount === 0) {
-    const createdTransactions: string[] = [];
-    for (const template of transactionTemplates) {
-      const date = randomDate(threeMonthsAgo, now);
-      const amount = randomAmount(template.minAmount, template.maxAmount);
-      const walletId = walletIds[Math.floor(Math.random() * walletIds.length)];
+  // ── Budgets ─────────────────────────────────────────────────────────────────
 
-      const tx = await prisma.transaction.create({
-        data: {
-          amount,
-          type: template.type,
-          description: template.description,
-          date,
-          categoryId: categoryMap[template.category],
-          walletId,
-          notes: null,
-        },
-      });
-      createdTransactions.push(tx.id);
-    }
-    console.log(`Created ${createdTransactions.length} sample transactions`);
-  } else {
-    console.log(`Skipping transactions — ${existingCount} already exist`);
-  }
-
-  // Sample budgets
-  const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
   const budgetDefs = [
-    { categoryName: "Alimentación", amount: 120000, spent: 78500, period: BudgetPeriod.MONTHLY },
-    { categoryName: "Transporte", amount: 50000, spent: 32000, period: BudgetPeriod.MONTHLY },
-    { categoryName: "Entretenimiento", amount: 40000, spent: 15000, period: BudgetPeriod.MONTHLY },
+    { id: "seed-budget-alimentacion", categoryName: "Alimentación", amount: 120000, spent: 82500, period: BudgetPeriod.MONTHLY },
+    { id: "seed-budget-transporte", categoryName: "Transporte", amount: 50000, spent: 28000, period: BudgetPeriod.MONTHLY },
+    { id: "seed-budget-entretenimiento", categoryName: "Entretenimiento", amount: 40000, spent: 14000, period: BudgetPeriod.MONTHLY },
   ];
 
-  const existingBudgets = await prisma.budget.count();
-  if (existingBudgets === 0) {
-    for (const def of budgetDefs) {
-      await prisma.budget.create({
-        data: {
-          amount: def.amount,
-          spent: def.spent,
-          period: def.period,
-          categoryId: categoryMap[def.categoryName],
-          startDate: currentMonthStart,
-          endDate: currentMonthEnd,
-        },
-      });
-    }
-    console.log(`Created ${budgetDefs.length} sample budgets`);
-  } else {
-    console.log(`Skipping budgets — ${existingBudgets} already exist`);
+  for (const b of budgetDefs) {
+    await prisma.budget.upsert({
+      where: { id: b.id },
+      update: {
+        amount: b.amount,
+        spent: b.spent,
+        period: b.period,
+        categoryId: categoryMap[b.categoryName],
+        startDate: monthStart,
+        endDate: monthEnd,
+      },
+      create: {
+        id: b.id,
+        amount: b.amount,
+        spent: b.spent,
+        period: b.period,
+        categoryId: categoryMap[b.categoryName],
+        startDate: monthStart,
+        endDate: monthEnd,
+      },
+    });
   }
 
-  // Sample calendar events
+  console.log(`  ✓ ${budgetDefs.length} budgets upserted`);
+
+  // ── Calendar Events ─────────────────────────────────────────────────────────
+
   const eventDefs = [
     {
-      title: "Pago tarjeta de crédito",
-      description: "Vencimiento resumen VISA",
+      id: "seed-event-visa",
+      title: "Vencimiento tarjeta VISA",
+      description: "Pago mínimo tarjeta de crédito VISA",
       date: new Date(now.getFullYear(), now.getMonth(), 15),
       type: EventType.PAYMENT_DUE,
-      amount: 85000,
+      amount: 95000,
+      isCompleted: now.getDate() > 15,
     },
     {
-      title: "Cobro de sueldo",
-      description: "Depósito sueldo mensual",
+      id: "seed-event-salario",
+      title: "Cobro de salario",
+      description: "Depósito sueldo mensual en cuenta bancaria",
       date: new Date(now.getFullYear(), now.getMonth(), 5),
       type: EventType.INCOME,
-      amount: 950000,
+      amount: 850000,
+      isCompleted: now.getDate() > 5,
     },
     {
-      title: "Vencimiento monotributo",
-      description: "Pago mensual AFIP",
+      id: "seed-event-edesur",
+      title: "Vencimiento Edesur",
+      description: "Pago factura de luz",
       date: new Date(now.getFullYear(), now.getMonth(), 20),
       type: EventType.PAYMENT_DUE,
-      amount: 22000,
+      amount: 14200,
+      isCompleted: false,
     },
     {
-      title: "Renovar seguro auto",
-      description: "Renovación póliza anual",
-      date: new Date(now.getFullYear(), now.getMonth() + 1, 1),
+      id: "seed-event-inversiones",
+      title: "Revisar inversiones",
+      description: "Evaluar rendimiento del FCI y decidir aportes",
+      date: new Date(now.getFullYear(), now.getMonth(), 25),
       type: EventType.REMINDER,
       amount: null,
+      isCompleted: false,
     },
     {
-      title: "Meta ahorro vacaciones",
-      description: "Objetivo: $500.000 para vacaciones de verano",
-      date: new Date(now.getFullYear(), 11, 1),
+      id: "seed-event-meta-viaje",
+      title: "Meta ahorro viaje",
+      description: "Alcanzar $500.000 para vacaciones de verano",
+      date: new Date(now.getFullYear(), now.getMonth() + 3, 1),
       type: EventType.GOAL,
       amount: 500000,
+      isCompleted: false,
     },
   ];
 
-  const existingEvents = await prisma.calendarEvent.count();
-  if (existingEvents === 0) {
-    for (const evt of eventDefs) {
-      await prisma.calendarEvent.create({
-        data: {
-          title: evt.title,
-          description: evt.description,
-          date: evt.date,
-          type: evt.type,
-          amount: evt.amount,
-          isCompleted: evt.date < now,
-        },
-      });
-    }
-    console.log(`Created ${eventDefs.length} sample calendar events`);
-  } else {
-    console.log(`Skipping calendar events — ${existingEvents} already exist`);
+  for (const e of eventDefs) {
+    await prisma.calendarEvent.upsert({
+      where: { id: e.id },
+      update: {
+        title: e.title,
+        description: e.description,
+        date: e.date,
+        type: e.type,
+        amount: e.amount,
+        isCompleted: e.isCompleted,
+      },
+      create: {
+        id: e.id,
+        title: e.title,
+        description: e.description,
+        date: e.date,
+        type: e.type,
+        amount: e.amount,
+        isCompleted: e.isCompleted,
+      },
+    });
   }
 
-  console.log("Seeding complete.");
+  console.log(`  ✓ ${eventDefs.length} calendar events upserted`);
+
+  console.log("\nSeeding complete!");
 }
 
 main()
-  .catch((e) => {
-    console.error("Seed error:", e);
-    process.exit(1);
-  })
-  .finally(async () => {
+  .then(async () => {
     await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error("Seed error:", e);
+    await prisma.$disconnect();
+    process.exit(1);
   });

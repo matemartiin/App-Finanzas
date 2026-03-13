@@ -3,21 +3,21 @@ import { cn } from '@/lib/utils';
 
 const badgeVariants = {
   primary:
-    'bg-[#7C9CB5]/15 text-[#5A7A93] dark:bg-[#7C9CB5]/25 dark:text-[#9DB9CE]',
+    'bg-primary/15 text-primary dark:bg-primary/25',
   secondary:
-    'bg-[#9BB5A0]/15 text-[#6E8E73] dark:bg-[#9BB5A0]/25 dark:text-[#B0CCAD]',
+    'bg-secondary/15 text-secondary dark:bg-secondary/25',
   accent:
-    'bg-[#B5A0C4]/15 text-[#8E78A0] dark:bg-[#B5A0C4]/25 dark:text-[#C8B9D4]',
+    'bg-accent/15 text-accent dark:bg-accent/25',
   warning:
-    'bg-[#D4A574]/15 text-[#A67D50] dark:bg-[#D4A574]/25 dark:text-[#DFC09A]',
+    'bg-warning/15 text-warning dark:bg-warning/25',
   success:
-    'bg-[#8DB596]/15 text-[#5E8E67] dark:bg-[#8DB596]/25 dark:text-[#A8CEB0]',
+    'bg-success/15 text-success dark:bg-success/25',
   income:
-    'bg-[#8DB596]/15 text-[#5E8E67] dark:bg-[#8DB596]/25 dark:text-[#A8CEB0]',
+    'bg-success/15 text-success dark:bg-success/25',
   expense:
-    'bg-[#C48A8A]/15 text-[#9E6464] dark:bg-[#C48A8A]/25 dark:text-[#D4A6A6]',
+    'bg-danger/15 text-danger dark:bg-danger/25',
   transfer:
-    'bg-[#7C9CB5]/15 text-[#5A7A93] dark:bg-[#7C9CB5]/25 dark:text-[#9DB9CE]',
+    'bg-primary/15 text-primary dark:bg-primary/25',
 } as const;
 
 const badgeSizes = {
@@ -33,6 +33,17 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   size?: BadgeSize;
   dot?: boolean;
 }
+
+const dotColors: Record<BadgeVariant, string> = {
+  primary: 'bg-primary',
+  secondary: 'bg-secondary',
+  accent: 'bg-accent',
+  warning: 'bg-warning',
+  success: 'bg-success',
+  income: 'bg-success',
+  expense: 'bg-danger',
+  transfer: 'bg-primary',
+};
 
 const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   (
@@ -54,17 +65,7 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
           <span
             className={cn(
               'h-1.5 w-1.5 rounded-full shrink-0',
-              variant === 'income' || variant === 'success'
-                ? 'bg-[#8DB596]'
-                : variant === 'expense'
-                  ? 'bg-[#C48A8A]'
-                  : variant === 'warning'
-                    ? 'bg-[#D4A574]'
-                    : variant === 'accent'
-                      ? 'bg-[#B5A0C4]'
-                      : variant === 'secondary'
-                        ? 'bg-[#9BB5A0]'
-                        : 'bg-[#7C9CB5]'
+              dotColors[variant]
             )}
           />
         )}

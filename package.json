@@ -22,7 +22,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^7.5.0",
+    "@prisma/client": "^5.22.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.36.0",
@@ -42,9 +42,10 @@
     "@types/node": "^25.5.0",
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "eslint": "^10.0.3",
     "postcss": "^8.5.8",
-    "prisma": "^7.5.0",
+    "prisma": "^5.22.0",
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3"
   }

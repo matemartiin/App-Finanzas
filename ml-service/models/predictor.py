@@ -1,3 +1,5 @@
+"""SpendingPredictor - Predicts future spending by category using linear regression."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -12,17 +14,19 @@ class SpendingPredictor:
 
     def __init__(self) -> None:
         self._models: dict[str, LinearRegression] = {}
+        self._category_means: dict[str, float] = {}
         self._categories: list[str] = []
         self._is_trained: bool = False
+        self._training_length: int = 0
 
     def _extract_features(self, dates: pd.Series) -> np.ndarray:
-        """Convert dates to numeric features: day-of-year, day-of-week, day-of-month."""
+        """Convert dates to numeric features: day-of-year, day-of-week, day-of-month, ordinal."""
         dt = pd.to_datetime(dates)
         return np.column_stack([
             dt.dt.dayofyear.values,
             dt.dt.dayofweek.values,
             dt.dt.day.values,
-            np.arange(len(dt)),  # ordinal sequence
+            np.arange(len(dt)),
         ])
 
     def train(self, transactions: list[dict[str, Any]]) -> dict[str, Any]:
@@ -48,13 +52,18 @@ class SpendingPredictor:
             return {"status": "no_expense_data", "categories_trained": 0}
 
         self._categories = expense_df["category"].unique().tolist()
+        self._training_length = len(expense_df)
         trained_count = 0
 
         for category in self._categories:
             cat_df = expense_df[expense_df["category"] == category].sort_values("date")
+            mean_amount = float(cat_df["amount"].mean())
+            self._category_means[category] = mean_amount
+
             if len(cat_df) < 2:
-                # For very small datasets, store the mean as a constant predictor
+                # Too few samples for regression; will use mean as fallback
                 self._models[category] = None  # type: ignore[assignment]
+                trained_count += 1
                 continue
 
             features = self._extract_features(cat_df["date"])
@@ -69,6 +78,7 @@ class SpendingPredictor:
         return {
             "status": "trained",
             "categories_trained": trained_count,
+            "total_samples": self._training_length,
             "categories": self._categories,
         }
 
@@ -84,15 +94,13 @@ class SpendingPredictor:
 
         today = datetime.now()
         future_dates = [today + timedelta(days=i) for i in range(1, days + 1)]
-        future_series = pd.Series(future_dates)
-
-        # Build ordinal offset from training data length
-        base_ordinal = 100  # approximate continuation
+        base_ordinal = self._training_length
 
         predictions: list[dict[str, Any]] = []
 
         for category in self._categories:
             model = self._models.get(category)
+            mean_amount = self._category_means.get(category, 0.0)
 
             for i, date in enumerate(future_dates):
                 if model is not None:
@@ -102,10 +110,10 @@ class SpendingPredictor:
                         date.day,
                         base_ordinal + i,
                     ]])
-                    amount = max(0, float(model.predict(features)[0]))
+                    amount = max(0.0, float(model.predict(features)[0]))
                 else:
-                    # Fallback: no model available, use zero
-                    amount = 0.0
+                    # Fallback to historical mean
+                    amount = max(0.0, mean_amount)
 
                 predictions.append({
                     "date": date.strftime("%Y-%m-%d"),

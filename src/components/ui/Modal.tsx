@@ -37,7 +37,7 @@ const panelVariants = {
     opacity: 1,
     scale: 1,
     y: 0,
-    transition: { type: 'spring', stiffness: 300, damping: 24 },
+    transition: { type: 'spring' as const, stiffness: 300, damping: 24 },
   },
   exit: { opacity: 0, scale: 0.97, y: 5, transition: { duration: 0.15 } },
 };
@@ -69,7 +69,7 @@ export function Modal({
       document.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden';
 
-      // focus first focusable element
+      // Focus first focusable element
       requestAnimationFrame(() => {
         const focusable = contentRef.current?.querySelector<HTMLElement>(
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -142,8 +142,8 @@ export function Modal({
             exit="exit"
             className={cn(
               'relative z-10 w-full rounded-2xl',
-              'bg-white dark:bg-gray-900',
-              'border border-gray-100 dark:border-gray-800',
+              'bg-surface',
+              'border border-border',
               'shadow-xl p-6',
               modalSizes[size],
               className
@@ -154,12 +154,12 @@ export function Modal({
               <div className="flex items-start justify-between mb-4">
                 <div>
                   {title && (
-                    <h2 className="text-lg font-semibold text-[#2D3436] dark:text-gray-100">
+                    <h2 className="text-lg font-semibold text-text-primary">
                       {title}
                     </h2>
                   )}
                   {description && (
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <p className="mt-1 text-sm text-text-secondary">
                       {description}
                     </p>
                   )}
@@ -168,9 +168,9 @@ export function Modal({
                   <button
                     onClick={onClose}
                     className={cn(
-                      'rounded-lg p-1.5 text-gray-400 hover:text-gray-600',
-                      'dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800',
-                      'transition-colors'
+                      'rounded-lg p-1.5 text-text-secondary hover:text-text-primary',
+                      'hover:bg-surface-alt',
+                      'transition-colors cursor-pointer'
                     )}
                     aria-label="Cerrar"
                   >
