@@ -1,0 +1,107 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+@import "tailwindcss";
+
+/* ===== Light Mode (default) ===== */
+:root {
+  --color-background: #F8F7F4;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F0EFEB;
+  --color-primary: #7C9CB5;
+  --color-secondary: #9BB5A0;
+  --color-accent: #B5A0C4;
+  --color-warning: #D4A574;
+  --color-danger: #C48A8A;
+  --color-success: #8DB596;
+  --color-text-primary: #2D3436;
+  --color-text-secondary: #636E72;
+  --color-border: #E0DDD7;
+}
+
+/* ===== Dark Mode ===== */
+.dark {
+  --color-background: #1A1B1E;
+  --color-surface: #25262B;
+  --color-surface-alt: #2C2E33;
+  --color-primary: #8BADC4;
+  --color-secondary: #A4C4A9;
+  --color-accent: #C4AFD3;
+  --color-warning: #D4A574;
+  --color-danger: #C48A8A;
+  --color-success: #8DB596;
+  --color-text-primary: #E8E6E3;
+  --color-text-secondary: #909296;
+  --color-border: #373A40;
+}
+
+/* ===== Base Styles ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== Smooth Transitions ===== */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-timing-function: ease;
+  transition-duration: 0ms;
+}
+
+.transition-theme {
+  transition-duration: 300ms;
+}
+
+/* ===== Custom Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-alt);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-surface-alt);
+}
+
+/* ===== Selection ===== */
+::selection {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+/* ===== Focus Styles ===== */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
